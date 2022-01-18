@@ -15,12 +15,6 @@ import {
   h
 } from './index'
 
-declare module 'vue' {
-  interface ComponentCustomProps {
-    hello?: string
-  }
-}
-
 describe('with object props', () => {
   interface ExpectedProps {
     a?: number | undefined
@@ -288,6 +282,7 @@ describe('with object props', () => {
       key={'foo'}
       // should allow ref
       ref={'foo'}
+      ref_for={true}
     />
   )
 
@@ -300,7 +295,6 @@ describe('with object props', () => {
       fff={(a, b) => ({ a: a > +b })}
       hhh={false}
       jjj={() => ''}
-      hello="hello"
     />
   )
 
