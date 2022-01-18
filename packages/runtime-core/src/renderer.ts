@@ -362,11 +362,13 @@ function baseCreateRenderer(
     slotScopeIds = null,
     optimized = __DEV__ && isHmrUpdating ? false : !!n2.dynamicChildren
   ) => {
+    // 如果两次虚拟dom完全一样, 直接返回无需diff
     if (n1 === n2) {
       return
     }
 
     // patching & not same type, unmount old tree
+    // 两个节点不同, 则 卸载老的
     if (n1 && !isSameVNodeType(n1, n2)) {
       anchor = getNextHostNode(n1)
       unmount(n1, parentComponent, parentSuspense, true)
@@ -381,12 +383,15 @@ function baseCreateRenderer(
     const { type, ref, shapeFlag } = n2
     switch (type) {
       case Text:
+        // 文本
         processText(n1, n2, container, anchor)
         break
       case Comment:
+        // 注释
         processCommentNode(n1, n2, container, anchor)
         break
       case Static:
+        // 静态节点
         if (n1 == null) {
           mountStaticNode(n2, container, anchor, isSVG)
         } else if (__DEV__) {
@@ -420,6 +425,7 @@ function baseCreateRenderer(
             optimized
           )
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
+          // 是一个组件
           processComponent(
             n1,
             n2,
@@ -1158,6 +1164,7 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     n2.slotScopeIds = slotScopeIds
+    // 首次执行不存在老节点
     if (n1 == null) {
       if (n2.shapeFlag & ShapeFlags.COMPONENT_KEPT_ALIVE) {
         ;(parentComponent!.ctx as KeepAliveContext).activate(
@@ -1377,6 +1384,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `patch`)
           }
+          // 执行patch
           patch(
             null,
             subTree,
@@ -1542,6 +1550,8 @@ function baseCreateRenderer(
     }
 
     // create reactive effect for rendering
+    // 创建一个effect for rendering
+    // effect 类比 vue2.x 中的 watcher实例
     const effect = (instance.effect = new ReactiveEffect(
       componentUpdateFn,
       () => queueJob(instance.update),
